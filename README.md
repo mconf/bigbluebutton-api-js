@@ -52,6 +52,7 @@ urls = api.getUrls(params)
   , getMeetings: "http://test-install.blindsidenetworks.com/bigbluebutton/api/getMeetings?random=446147049&checksum=94ba109ea7348ea7d89239855812fdd7bdaf"
   ...
 }
+```
 
 Development
 -----------
