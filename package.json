@@ -1,0 +1,10 @@
+{
+    "name": "bigbluebutton-api-js"
+  , "version": "0.0.1"
+  , "dependencies": {
+  }
+  , "devDependencies": {
+      "coffee-script": "1.4.0"
+  }
+  , "engine": "node >= 0.8.9"
+}
