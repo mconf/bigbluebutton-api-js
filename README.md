@@ -7,11 +7,17 @@ generates links to all methods in
 It's written in [Coffeescript](http://coffeescript.org/) and should
 work in the browser or in [Node.js](http://nodejs.org/) applications.
 
+Example
+-------
+
+Open `example/index.html` in your browser for a quick example of what
+this lib does.
+
 Usage
 -----
 
 This library requires:
-* jQuery >= 1.7
+* [jQuery](http://jquery.com/) >= 1.7
 * [CryptoJS](http://code.google.com/p/crypto-js/), that can be found
   in the `vendor` directory.
 
@@ -21,7 +27,7 @@ Once you add these libraries to your page, you can get the links with
 ```coffeescript
 # Create an API object passing the url, the salt and the mobile salt
 api = new BigBlueButtonApi("http://test-install.blindsidenetworks.com/bigbluebutton/api/",
-                           "8cd8ef52e8e101574e400365b55e11a6", "8cd8e")
+                           "8cd8ef52e8e101574e400365b55e11a6", "03b07")
 
 # A hash of parameters.
 # The parameter names are the same names BigBlueButton expects to
@@ -69,7 +75,7 @@ Then, to compile the coffee files into javascript, run:
     cake build
 
 This will compile all `*.coffee` files in `/src` to javascript files
-in `/lib/`.
+in `/lib`.
 
 To watch for changes and compile the files automatically run:
 
