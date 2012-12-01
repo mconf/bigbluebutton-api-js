@@ -82,6 +82,7 @@ class BigBlueButtonApi
 
   # Returns an object with URLs to all methods in BigBlueButton' API.
   getUrls: (params) ->
+    params ?= {}
     params.random = Math.floor(Math.random() * 1000000000).toString()
 
     params.password = params.attendeePW
@@ -125,7 +126,8 @@ class BigBlueButtonApi
     # list of params
     paramList = []
     for key, param of params
-      paramList.push "#{encodeURIComponent(key)}=#{encodeURIComponent(param)}"
+      if key? and param?
+        paramList.push "#{encodeURIComponent(key)}=#{encodeURIComponent(param)}"
     query = paramList.join("&") if paramList.length > 0
 
     # calculate the checksum
