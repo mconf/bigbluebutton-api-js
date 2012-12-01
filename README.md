@@ -10,8 +10,8 @@ work in the browser or in [Node.js](http://nodejs.org/) applications.
 Example
 -------
 
-Open `example/index.html` in your browser for a quick example of what
-this lib does.
+Open `example/index.html` or check http://mconf.github.com/bigbluebutton-api-js
+for a quick example of what this lib does.
 
 Usage
 -----
