@@ -80,3 +80,8 @@ in `/lib`.
 To watch for changes and compile the files automatically run:
 
     cake watch
+
+License
+-------
+
+Distributed under The MIT License (MIT), see `LICENSE`.
