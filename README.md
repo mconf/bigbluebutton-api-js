@@ -21,7 +21,7 @@ This library requires:
 * [CryptoJS](http://code.google.com/p/crypto-js/), that can be found
   in the `vendor` directory.
 
-Once you add these libraries to your page, you can get the links with
+Add these libraries and `bigbluebutton-api.js` to your page, and then get the links with
 (code in Coffeescript):
 
 ```coffeescript
@@ -30,25 +30,23 @@ api = new BigBlueButtonApi("http://test-install.blindsidenetworks.com/bigbluebut
                            "8cd8ef52e8e101574e400365b55e11a6", "03b07")
 
 # A hash of parameters.
-# The parameter names are the same names BigBlueButton expects to
-# receive in the API calls. The lib will make sure that, for each
-# API call, only the parameters it support will be used.
+# The parameter names are the same names BigBlueButton expects to receive in the API calls.
+# The lib will make sure that, for each API call, only the parameters supported will be used.
 params =
   name: "random-9998650"
   meetingID: "random-9998650"
   moderatorPW: "mp"
   attendeePW: "ap"
+  password: "mp" # usually equals "moderatorPW"
   welcome: "<br>Welcome to <b>%%CONFNAME%%</b>!"
-  attendeePW: "ap"
   fullName: "User 8584148"
-  meetingID: "random-9998650"
-  moderatorPW: "mp"
-  password: "mp"
   publish: false
   random: "416074726"
   record: false
   recordID: "random-9998650"
   voiceBridge: "75858"
+  meta_anything: "My Meta Parameter"
+  custom_customParameter: "Will be passed as 'customParameter' to all calls"
 urls = api.getUrls(params)
 
 # Will return an object with all URLs, similar to:
@@ -60,11 +58,20 @@ urls = api.getUrls(params)
 }
 ```
 
+Features
+--------
+
+* No matter what parameters you pass to `getUrls`, the lib will only use the parameters that are supported for each API call.
+* You can pass meta parameters to `create`, just use `meta_*`, for example: `meta_myParam`, `meta_HELLO`.
+* You can pass custom parameters with `custom_*`. The prefix `custom_` will be removed and the parameter will be passed to **all** API calls. So, for example, `custom_isGuest` will become `isGuest`, and will be passed to all API calls. This is useful when developing new API features.
+* If you want only the URL for a single API method, use the methods `urlFor`. For example: `api.urlFor("isMeetingRunning", params)`.
+
+
 Development
 -----------
 
-At first install [Node.js](http://nodejs.org/), see `package.json` for
-the specific version required.
+At first, install [Node.js](http://nodejs.org/) (see `package.json` for
+the specific version required).
 
 Install the dependencies with:
 
