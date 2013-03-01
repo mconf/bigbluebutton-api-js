@@ -24,7 +24,7 @@ class BigBlueButtonApi
           [ "logoutURL", false ],
           [ "maxParticipants", false ],
           [ "record", false ],
-          [ "duration", false ]
+          [ "duration", false ],
           [ /meta_\w+/, false ],
         ]
       when "join"
@@ -38,17 +38,19 @@ class BigBlueButtonApi
       when "isMeetingRunning"
         [ [ "meetingID", true ] ]
       when "end"
-        [ [ "meetingID", true ]
+        [ [ "meetingID", true ],
           [ "password", true ],
         ]
       when "getMeetingInfo"
-        [ [ "meetingID", true ]
+        [ [ "meetingID", true ],
           [ "password", true ],
         ]
       when "getMeetings"
         [ [ "random", true ] ]
       when "getRecordings"
-        [ [ "meetingID", true ] ]
+        [ [ "meetingID", true ],
+          [ /meta_\w+/, false ],
+        ]
       when "publishRecordings"
         [ [ "recordID", true ],
           [ "publish", true ]
