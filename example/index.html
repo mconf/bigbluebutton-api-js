@@ -24,9 +24,20 @@
         mobileSalt = $("#mobile-salt").val();
         moderatorPW = $("#moderatorPW").val();
         attendeePW = $("#attendeePW").val();
+        customCalls = $("#customCalls").val().split(/\n/);
+
+        customParams = {}
+        var length = customCalls.length,
+        element = null;
+        for (var i = 0; i < length; i++) {
+          element = customCalls[i];
+          var keyvalue = element.split("=");
+          var key = "call_" + keyvalue[0];
+          customParams[key] = keyvalue[1];
+        }
 
         api = new BigBlueButtonApi(server, salt, mobileSalt);
-        params = { moderatorPW: moderatorPW, attendeePW: attendeePW }
+        params = $.extend( { moderatorPW: moderatorPW, attendeePW: attendeePW } , customParams);
         r = api.getUrls(params);
         $("#results").html(htmlFromResults(r));
       }
@@ -63,6 +74,11 @@
       <div class="fieldset">
         <label for="attendeePW" class="control-label">Attendee password:</label>
         <input id="attendeePW" type="text" value="ap">
+      </div>
+      <h4>Custom API calls</h4>
+      <div class="fieldset">
+        <label for="customCalls" class="control-label">Custom API calls:</label>
+        <textarea id="customCalls" placeHolder="attribute=value (one per line)" rows="3"></textarea>
       </div>
       <div class="fieldset">
         <button id="generate" value="123" class="btn btn-success">Generate</button>

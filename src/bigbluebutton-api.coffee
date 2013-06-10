@@ -95,6 +95,8 @@ class BigBlueButtonApi
     joinModMobile = @replaceMobileProtocol joinMod
     # for all other urls, the password will be moderatorPW
 
+    console.log(params)
+
     ret =
 
       # standard API
@@ -117,6 +119,13 @@ class BigBlueButtonApi
       'mobile: getTimestamp': @urlForMobileApi("getTimestamp", params)
       'mobile: getMeetings': @urlForMobileApi("getMeetings", params)
       'mobile: create': @urlForMobileApi("create", params)
+
+      'customurl' : @urlForCustomApiCalls(params)
+
+  # Returns custom API calls
+  urlForCustomApiCalls: (params) ->
+    ret =
+      ""
 
   # Returns a url for any `method` available in the BigBlueButton API
   # using the parameters in `params`.
