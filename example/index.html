@@ -8,11 +8,20 @@
     <title>bigbluebutton-api-js example</title>
     <script type="text/javascript">
 
+      escapeHtml = function(unsafe) {
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+      }
+
       htmlFromResults = function(results) {
         var output = "<h4>Results:</h4>";
         for (property in results) {
           output += property + " = ";
-          output += "<a href='" + results[property] + "'>" + results[property] + "</a>";
+          output += "<a href='" + results[property] + "'>" + escapeHtml(results[property]) + "</a>";
           output += "<br>"
         }
         return output;
@@ -22,27 +31,39 @@
         server = $("#server").val();
         salt = $("#salt").val();
         mobileSalt = $("#mobile-salt").val();
+        meetingID = $("#meetingID").val();
         moderatorPW = $("#moderatorPW").val();
         attendeePW = $("#attendeePW").val();
-        customCalls = $("#customCalls").val().split(/\n/);
 
-        customParams = {}
-        var length = customCalls.length,
-        element = null;
-        for (var i = 0; i < length; i++) {
-          element = customCalls[i];
+        //for custom calls
+        splitCalls = $("#customCalls").val().split(/\n/);
+        customCalls = {};   
+        for (var i = 0; i < splitCalls.length; i++) {
+          var element = splitCalls[i];
           var keyvalue = element.split("=");
           var key = "call_" + keyvalue[0];
+          customCalls[key] = keyvalue[1];
+        }
+
+        //for custom calls
+        splitParams = $("#customParams").val().split(/\n/);
+        customParams = {}
+
+        for (var i = 0; i < splitParams.length; i++) {
+          var element = splitParams[i];
+          var keyvalue = element.split("=");
+          var key = "custom_" + keyvalue[0];
           customParams[key] = keyvalue[1];
         }
 
         api = new BigBlueButtonApi(server, salt, mobileSalt);
-        params = $.extend( { moderatorPW: moderatorPW, attendeePW: attendeePW } , customParams);
+        params = $.extend( { meetingID:meetingID, moderatorPW: moderatorPW, attendeePW: attendeePW } , customCalls, customParams);
         r = api.getUrls(params);
         $("#results").html(htmlFromResults(r));
       }
 
       $(document).ready(function() {
+        $("#meetingID").val("test-" + Math.floor(Math.random()*10000));
         $("#generate").on("click", function() {
           getAll();
         });
@@ -68,6 +89,10 @@
       </div>
       <h4>Some basic parameters:</h4>
       <div class="fieldset">
+        <label for="meetingID" class="control-label">Meeting ID:</label>
+        <input id="meetingID" type="text">
+      </div>
+      <div class="fieldset">
         <label for="moderatorPW" class="control-label">Moderator password:</label>
         <input id="moderatorPW" type="text" value="mp">
       </div>
@@ -75,10 +100,14 @@
         <label for="attendeePW" class="control-label">Attendee password:</label>
         <input id="attendeePW" type="text" value="ap">
       </div>
-      <h4>Custom API calls</h4>
+      <h4>Custom Fields</h4>
       <div class="fieldset">
         <label for="customCalls" class="control-label">Custom API calls:</label>
-        <textarea id="customCalls" placeHolder="attribute=value (one per line)" rows="3"></textarea>
+        <textarea id="customCalls" placeHolder="name=APICall (one per line)" rows="3"></textarea>
+      </div>
+      <div class="fieldset">
+        <label for="customParams" class="control-label">Custom Parameters:</label>
+        <textarea id="customParams" placeHolder="attribute=value (one per line)" rows="3"></textarea>
       </div>
       <div class="fieldset">
         <button id="generate" value="123" class="btn btn-success">Generate</button>

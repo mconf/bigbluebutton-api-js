@@ -57,6 +57,8 @@ class BigBlueButtonApi
         ]
       when "deleteRecordings"
         [ [ "recordID", true ] ]
+      else 
+        [ [ "meetingID", true ] ]
 
   # Filter `params` to allow only parameters that can be passed
   # to the method `method`.
@@ -120,12 +122,17 @@ class BigBlueButtonApi
       'mobile: getMeetings': @urlForMobileApi("getMeetings", params)
       'mobile: create': @urlForMobileApi("create", params)
 
-      'customurl' : @urlForCustomApiCalls(params)
+    ret = $.extend(ret, @urlForCustomApiCalls(params))
 
   # Returns custom API calls
   urlForCustomApiCalls: (params) ->
-    ret =
-      ""
+    urls = {}
+    for key, param of params
+      if key.match(/^call_/) 
+        custom_call = key.replace(/^call_/, "")
+        urls[ 'custom call ' + custom_call + ':'] =  @urlFor(param, params)
+    
+    ret = urls
 
   # Returns a url for any `method` available in the BigBlueButton API
   # using the parameters in `params`.
