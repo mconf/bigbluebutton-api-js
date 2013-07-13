@@ -9,29 +9,64 @@
     <script type="text/javascript">
 
       htmlFromResults = function(results) {
-        var output = "<h4>Results:</h4>";
+        var container = $("<div></div>");
+        container.append($("<h4></h4>").text("Results:"));
+
         for (property in results) {
-          output += property + " = ";
-          output += "<a href='" + results[property] + "'>" + results[property] + "</a>";
-          output += "<br>"
+          var line = $("<div></div>");
+          var callName = $("<span></span>").text(property + " = ");
+          var callLink = $("<a></a>");
+          callLink.attr("href", results[property]);
+          callLink.text(results[property]);
+          line.append(callName);
+          line.append(callLink);
+          container.append(line);
         }
-        return output;
+
+        return container;
+      }
+
+      removeEmptyParams = function(params) {
+        for (key in params) {
+          if (params[key] === 'null' || params[key].trim() === "") {
+            delete params[key];
+          }
+        }
+        return params;
       }
 
       getAll = function() {
+
         server = $("#server").val();
         salt = $("#salt").val();
         mobileSalt = $("#mobile-salt").val();
+        meetingID = $("#meetingID").val();
         moderatorPW = $("#moderatorPW").val();
         attendeePW = $("#attendeePW").val();
 
+        // for custom parameters
+        splitParams = $("#customParams").val().replace(/\r\n/g, "\n").split("\n");
+        customParams = {}
+        for (var i = 0; i < splitParams.length; i++) {
+          var element = splitParams[i];
+          var keyvalue = element.split("=");
+          var key = "custom_" + keyvalue[0];
+          customParams[key] = keyvalue[1];
+        }
+
+        // for custom calls
+        customCalls = $("#customCalls").val().split(/\n/);
+
         api = new BigBlueButtonApi(server, salt, mobileSalt);
-        params = { moderatorPW: moderatorPW, attendeePW: attendeePW }
-        r = api.getUrls(params);
+        params = { meetingID:meetingID, moderatorPW: moderatorPW, attendeePW: attendeePW };
+        params = $.extend(params, customParams);
+        params = removeEmptyParams(params);
+        r = api.getUrls(params, customCalls);
         $("#results").html(htmlFromResults(r));
       }
 
       $(document).ready(function() {
+        $("#meetingID").val("test-" + Math.floor(Math.random()*10000));
         $("#generate").on("click", function() {
           getAll();
         });
@@ -59,12 +94,25 @@
       </div>
       <h4>Some basic parameters:</h4>
       <div class="fieldset">
+        <label for="meetingID" class="control-label">Meeting ID:</label>
+        <input id="meetingID" type="text">
+      </div>
+      <div class="fieldset">
         <label for="moderatorPW" class="control-label">Moderator password:</label>
         <input id="moderatorPW" type="text" value="mp">
       </div>
       <div class="fieldset">
         <label for="attendeePW" class="control-label">Attendee password:</label>
         <input id="attendeePW" type="text" value="ap">
+      </div>
+      <h4>Custom Fields</h4>
+      <div class="fieldset">
+        <label for="customCalls" class="control-label">Custom API calls:</label>
+        <textarea id="customCalls" placeHolder="API calls (one per line)" rows="3"></textarea>
+      </div>
+      <div class="fieldset">
+        <label for="customParams" class="control-label">Custom Parameters:</label>
+        <textarea id="customParams" placeHolder="attribute=value (one per line)" rows="3"></textarea>
       </div>
       <div class="fieldset">
         <button id="generate" value="123" class="btn btn-success">Generate</button>
