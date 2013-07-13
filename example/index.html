@@ -8,26 +8,35 @@
     <title>bigbluebutton-api-js example</title>
     <script type="text/javascript">
 
-      escapeHtml = function(unsafe) {
-        return unsafe
-             .replace(/&/g, "&amp;")
-             .replace(/</g, "&lt;")
-             .replace(/>/g, "&gt;")
-             .replace(/"/g, "&quot;")
-             .replace(/'/g, "&#039;");
+      htmlFromResults = function(results) {
+        var container = $("<div></div>");
+        container.append($("<h4></h4>").text("Results:"));
+
+        for (property in results) {
+          var line = $("<div></div>");
+          var callName = $("<span></span>").text(property);
+          var callLink = $("<a></a>");
+          callLink.attr("href", results[property]);
+          callLink.text(results[property]);
+          line.append(callName);
+          line.append(callLink);
+          container.append(line);
+        }
+
+        return container;
       }
 
-      htmlFromResults = function(results) {
-        var output = "<h4>Results:</h4>";
-        for (property in results) {
-          output += property + " = ";
-          output += "<a href='" + results[property] + "'>" + escapeHtml(results[property]) + "</a>";
-          output += "<br>"
+      removeEmptyParams = function(params) {
+        for (key in params) {
+          if (params[key] === 'null' || params[key].trim() === "") {
+            delete params[key];
+          }
         }
-        return output;
+        return params;
       }
 
       getAll = function() {
+
         server = $("#server").val();
         salt = $("#salt").val();
         mobileSalt = $("#mobile-salt").val();
@@ -35,20 +44,9 @@
         moderatorPW = $("#moderatorPW").val();
         attendeePW = $("#attendeePW").val();
 
-        //for custom calls
-        splitCalls = $("#customCalls").val().split(/\n/);
-        customCalls = {};   
-        for (var i = 0; i < splitCalls.length; i++) {
-          var element = splitCalls[i];
-          var keyvalue = element.split("=");
-          var key = "call_" + keyvalue[0];
-          customCalls[key] = keyvalue[1];
-        }
-
-        //for custom calls
-        splitParams = $("#customParams").val().split(/\n/);
+        // for custom parameters
+        splitParams = $("#customParams").val().replace(/\r\n/g, "\n").split("\n");
         customParams = {}
-
         for (var i = 0; i < splitParams.length; i++) {
           var element = splitParams[i];
           var keyvalue = element.split("=");
@@ -56,9 +54,14 @@
           customParams[key] = keyvalue[1];
         }
 
+        // for custom calls
+        customCalls = $("#customCalls").val().split(/\n/);
+
         api = new BigBlueButtonApi(server, salt, mobileSalt);
-        params = $.extend( { meetingID:meetingID, moderatorPW: moderatorPW, attendeePW: attendeePW } , customCalls, customParams);
-        r = api.getUrls(params);
+        params = { meetingID:meetingID, moderatorPW: moderatorPW, attendeePW: attendeePW };
+        params = $.extend(params, customParams);
+        params = removeEmptyParams(params);
+        r = api.getUrls(params, customCalls);
         $("#results").html(htmlFromResults(r));
       }
 

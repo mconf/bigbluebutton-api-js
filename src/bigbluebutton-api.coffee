@@ -9,7 +9,7 @@ class BigBlueButtonApi
   # Returns a list of supported parameters for a given API method
   # The return is an array of arrays composed by:
   #   [0] - RegEx or string with the parameter name
-  #   [1] - true if the parameter is required
+  #   [1] - true if the parameter is required, false otherwise
   paramsFor: (param) ->
     switch param
       when "create"
@@ -57,12 +57,10 @@ class BigBlueButtonApi
         ]
       when "deleteRecordings"
         [ [ "recordID", true ] ]
-      else 
-        [ [ "meetingID", true ] ]
 
   # Filter `params` to allow only parameters that can be passed
   # to the method `method`.
-  # To allow custom parameters, name them `custom_parameterName`.
+  # To use custom parameters, name them `custom_parameterName`.
   # The `custom_` prefix will be removed when generating the urls.
   filterParams: (params, method) ->
     filters = @paramsFor(method)
@@ -79,25 +77,24 @@ class BigBlueButtonApi
 
       # creates keys without "custom_" and deletes the ones with it
       for key, v of r
-        r[key.replace(/^custom_/, "")] = v if key.match(/^custom_/)
+        if key.match(/^custom_/)
+          r[key.replace(/^custom_/, "")] = v
       for key of r
         delete r[key] if key.match(/^custom_/)
       r
 
   # Returns an object with URLs to all methods in BigBlueButton' API.
-  getUrls: (params) ->
+  getUrls: (params, customCalls=null) ->
     params ?= {}
     params.random = Math.floor(Math.random() * 1000000000).toString()
 
     params.password = params.attendeePW
     joinAtt = @urlFor("join", params)
-    joinAttMobile = @replaceMobileProtocol joinAtt
+    joinAttMobile = @replaceMobileProtocol(joinAtt)
     params.password = params.moderatorPW
     joinMod = @urlFor("join", params)
-    joinModMobile = @replaceMobileProtocol joinMod
+    joinModMobile = @replaceMobileProtocol(joinMod)
     # for all other urls, the password will be moderatorPW
-
-    console.log(params)
 
     ret =
 
@@ -122,22 +119,16 @@ class BigBlueButtonApi
       'mobile: getMeetings': @urlForMobileApi("getMeetings", params)
       'mobile: create': @urlForMobileApi("create", params)
 
-    ret = $.extend(ret, @urlForCustomApiCalls(params))
+    if customCalls?
+      for call in customCalls
+        ret[ 'custom call ' + call + ':'] =  @urlFor(call, params, false)
 
-  # Returns custom API calls
-  urlForCustomApiCalls: (params) ->
-    urls = {}
-    for key, param of params
-      if key.match(/^call_/) 
-        custom_call = key.replace(/^call_/, "")
-        urls[ 'custom call ' + custom_call + ':'] =  @urlFor(param, params)
-    
-    ret = urls
+    ret
 
   # Returns a url for any `method` available in the BigBlueButton API
   # using the parameters in `params`.
-  urlFor: (method, params) ->
-    params = @filterParams(params, method)
+  urlFor: (method, params, filter=true) ->
+    params = @filterParams(params, method) if filter
 
     url = @url
 
