@@ -14,7 +14,7 @@
 
         for (property in results) {
           var line = $("<div></div>");
-          var callName = $("<span></span>").text(property);
+          var callName = $("<span></span>").text(property + " = ");
           var callLink = $("<a></a>");
           callLink.attr("href", results[property]);
           callLink.text(results[property]);

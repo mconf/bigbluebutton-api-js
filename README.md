@@ -13,11 +13,20 @@ Example
 Open `example/index.html` or check http://mconf.github.com/bigbluebutton-api-js
 for a quick example of what this lib does.
 
+Features
+--------
+
+* Gives you links to all API methods.
+* No matter what parameters you pass to it, the lib will only use the parameters that are supported for each API call.
+* You can pass meta parameters to `create` using the prefix `meta_`.
+* You can pass any custom parameters to all API calls with the prefix `custom_`.
+* You can get links for custom API calls. This is useful when developing new API methods.
+* You can also get links to a single method or just get the checksum for a call.
+
 Usage
 -----
 
 This library requires:
-* [jQuery](http://jquery.com/) >= 1.7
 * [CryptoJS](http://code.google.com/p/crypto-js/), that can be found
   in the `vendor` directory.
 
@@ -33,8 +42,8 @@ api = new BigBlueButtonApi("http://test-install.blindsidenetworks.com/bigbluebut
 # The parameter names are the same names BigBlueButton expects to receive in the API calls.
 # The lib will make sure that, for each API call, only the parameters supported will be used.
 params =
-  name: "random-9998650"
-  meetingID: "random-9998650"
+  name: "random-123"
+  meetingID: "random-123"
   moderatorPW: "mp"
   attendeePW: "ap"
   password: "mp" # usually equals "moderatorPW"
@@ -48,41 +57,102 @@ params =
   meta_anything: "My Meta Parameter"
   custom_customParameter: "Will be passed as 'customParameter' to all calls"
 urls = api.getUrls(params)
+```
 
-# Will return an object with all URLs, similar to:
+This call will return an object with all URLs, similar to the examples below (not real examples, they don't have
+all parameters specified above):
+
+```coffeescript
 {
-    create: "http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-266119&meetingID=random-266119&moderatorPW=mp&attendeePW=ap&welcome=%3Cbr%3EWelcome%20to%20%3Cb%3E%25%25CONFNAME%25%25%3C%2Fb%3E!&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
-  , end: "http://test-install.blindsidenetworks.com/bigbluebutton/api/end?meetingID=random-266119&password=mp&checksum=4f0df85832063a4606786a8f4207a6629fcc"
-  , getMeetings: "http://test-install.blindsidenetworks.com/bigbluebutton/api/getMeetings?random=446147049&checksum=94ba109ea7348ea7d89239855812fdd7bdaf"
+    create: "http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-123&meetingID=random-123&moderatorPW=mp&attendeePW=ap&welcome=%3Cbr%3EWelcome%20to%20%3Cb%3E%25%25CONFNAME%25%25%3C%2Fb%3E!&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
+  , end: "http://test-install.blindsidenetworks.com/bigbluebutton/api/end?meetingID=random-123&password=mp&checksum=4f0df85832063a4606786a8f4207a6629fcc"
+  , getMeetings: "http://test-install.blindsidenetworks.com/bigbluebutton/api/getMeetings?random=123&checksum=94ba109ea7348ea7d89239855812fdd7bdaf"
   ...
 }
 ```
 
-Features
---------
+### Custom parameters
 
-* No matter what parameters you pass to `getUrls`, the lib will only use the parameters that are supported for each API call.
-* You can pass meta parameters to `create`, just use `meta_*`, for example: `meta_myParam`, `meta_HELLO`.
-* You can pass custom parameters with `custom_*`. The prefix `custom_` will be removed and the parameter will be passed to **all** API calls. So, for example, `custom_isGuest` will become `isGuest`, and will be passed to all API calls. This is useful when developing new API features.
+You can pass custom parameters using the prefix `custom_`. These parameters will be included in
+**all** API calls.
+
+
+```coffeescript
+params =
+  name: "random-123"
+  meetingID: "random-123"
+  custom_customParameter: "random"
+  custom_another: 123
+urls = api.getUrls(params)
+```
+
+Will return URLs such as:
+
+```coffeescript
+"http://server.com/bigbluebutton/api/create?name=random-123&meetingID=random-123&customParameter=random&another=123&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
+```
+
+### Metadata
+
+Pass metadata parameters using the prefix `meta_`. These parameters will be included in only in the API calls
+that support metadata.
+
+```coffeescript
+params =
+  name: "random-9998650"
+  meetingID: "random-9998650"
+  meta_any: "random"
+  meta_another: 123
+urls = api.getUrls(params)
+```
+
+Will return URLs such as:
+
+```coffeescript
+"http://server.com/bigbluebutton/api/create?name=random-123&meetingID=random-123&meta_any=random&meta_another=123&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
+```
+
+### Custom API calls
+
+You can pass an array of custom API calls to `getUrls()`. This array should contain strings with the name of your
+custom API calls. **All** the parameters will be used in **all** the custom API calls.
+
+
+```coffeescript
+params =
+  meetingID: "random-9998650"
+  meta_any: "random"
+  custom_another: 123
+urls = api.getUrls(params, ["customApiCall", "anotherCall"])
+```
+
+Will return URLs such as:
+
+```coffeescript
+"http://server.com/bigbluebutton/api/customApiCall?meetingID=random-123&meta_any=random&another=123&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
+"http://server.com/bigbluebutton/api/anotherCall?meetingID=random-123&meta_any=random&another=123&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
+```
+
+### More
+
 * If you want only the URL for a single API method, use the methods `urlFor`. For example: `api.urlFor("isMeetingRunning", params)`.
+* To get just the checksum for a call you can use the method `checksum`. For example: `api.checksum("isMeetingRunning", "meetingID=mymeeting&custom=1", false)`.
 
 
 Development
 -----------
 
-At first, install [Node.js](http://nodejs.org/) (see `package.json` for
-the specific version required).
+At first, install [Node.js](http://nodejs.org/) (see `package.json` for the specific version required).
 
 Install the dependencies with:
 
-    npm install -d
+    npm install
 
 Then, to compile the coffee files into javascript, run:
 
     cake build
 
-This will compile all `*.coffee` files in `/src` to javascript files
-in `/lib`.
+This will compile all `*.coffee` files in `/src` to javascript files in `/lib`.
 
 To watch for changes and compile the files automatically run:
 
