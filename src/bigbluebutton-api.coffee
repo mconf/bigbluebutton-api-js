@@ -63,7 +63,7 @@ class BigBlueButtonApi
 
     if customCalls?
       for call in customCalls
-        ret[ 'custom call ' + call + ':'] =  @urlFor(call, params, false)
+        ret[ 'custom call: ' + call] =  @urlFor(call, params, false)
 
     ret
 
@@ -136,18 +136,15 @@ class BigBlueButtonApi
             return true if key.match("^#{filter[0]}$") or key.match(/^custom_/)
         return false
 
-      # creates keys without "custom_" and deletes the ones with it
-      for key, v of r
-        if key.match(/^custom_/)
-          r[key.replace(/^custom_/, "")] = v
-      for key of r
-        delete r[key] if key.match(/^custom_/)
-      r
+    filterCustomParameters(r)
 
   # Returns a url for any `method` available in the BigBlueButton API
   # using the parameters in `params`.
   urlFor: (method, params, filter=true) ->
-    params = @filterParams(params, method) if filter
+    if filter
+      params = @filterParams(params, method)
+    else
+      params = filterCustomParameters(params)
 
     url = @url
 
@@ -174,7 +171,7 @@ class BigBlueButtonApi
   # Calls `urlFor` and changes the generated url to point
   # to the mobile API.
   urlForMobileApi: (method, params) ->
-    url = @urlFor method, params, true
+    url = @urlFor(method, params, true)
 
     # change the path
     oldPat = new RegExp("bigbluebutton\\/api\\/" + method + "\\?")
@@ -215,3 +212,12 @@ replaceMobileProtocol = (url) ->
   url.replace(/http[s]?\:\/\//, "bigbluebutton://")
 
 root.BigBlueButtonApi = BigBlueButtonApi
+
+# creates keys without "custom_" and deletes the ones with it
+filterCustomParameters = (params) ->
+  for key, v of params
+    if key.match(/^custom_/)
+      params[key.replace(/^custom_/, "")] = v
+  for key of params
+    delete params[key] if key.match(/^custom_/)
+  params
