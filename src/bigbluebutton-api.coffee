@@ -88,7 +88,9 @@ class BigBlueButtonApi
           [ "maxParticipants", false ],
           [ "record", false ],
           [ "duration", false ],
-          [ /meta_\w+/, false ]
+          [ /meta_\w+/, false ],
+          [ "redirectClient", false ],
+          [ "clientURL", false ]
         ]
       when "join"
         [ [ "fullName", true ]
@@ -96,7 +98,9 @@ class BigBlueButtonApi
           [ "password", true ] ,
           [ "createTime", false ],
           [ "userID", false ],
-          [ "webVoiceConf", false ]
+          [ "webVoiceConf", false ],
+          [ "configToken", false ],
+          [ "avatarURL", false ]
         ]
       when "isMeetingRunning"
         [ [ "meetingID", true ] ]
