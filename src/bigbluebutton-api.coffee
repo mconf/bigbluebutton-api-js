@@ -28,7 +28,6 @@ class BigBlueButtonApi
   #                parameters in `params` will be applied to these calls.
   getUrls: (params, customCalls=null) ->
     params ?= {}
-    params.random = Math.floor(Math.random() * 1000000000).toString()
 
     params.password = params.attendeePW
     joinAtt = @urlFor("join", params)
@@ -109,8 +108,6 @@ class BigBlueButtonApi
         [ [ "meetingID", true ],
           [ "password", true ]
         ]
-      when "getMeetings"
-        [ [ "random", true ] ]
       when "getRecordings"
         [ [ "meetingID", true ],
           [ /meta_\w+/, false ]
