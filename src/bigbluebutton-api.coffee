@@ -41,6 +41,7 @@ class BigBlueButtonApi
     ret =
 
       # standard API
+      'root': @urlFor("", params)
       'create': @urlFor("create", params)
       'join (as moderator)': joinMod
       'join (as attendee)': joinAtt
@@ -48,6 +49,8 @@ class BigBlueButtonApi
       'getMeetingInfo': @urlFor("getMeetingInfo", params)
       'end': @urlFor("end", params)
       'getMeetings': @urlFor("getMeetings", params)
+      'getDefaultConfigXML': @urlFor("getDefaultConfigXML", params)
+      'setConfigXML': @urlFor("setConfigXML", params)
       'getRecordings': @urlFor("getRecordings", params)
       'publishRecordings': @urlFor("publishRecordings", params)
       'deleteRecordings': @urlFor("deleteRecordings", params)
@@ -67,11 +70,11 @@ class BigBlueButtonApi
 
     ret
 
-  # Returns a list of supported parameters for a given API method.
+  # Returns a list of supported parameters in the URL for a given API method.
   # The return is an array of arrays composed by:
   #   [0] - RegEx or string with the parameter name
   #   [1] - true if the parameter is required, false otherwise
-  paramsFor: (param) ->
+  urlParamsFor: (param) ->
     switch param
       when "create"
         [ [ "meetingID", true ]
@@ -124,7 +127,7 @@ class BigBlueButtonApi
   # To use custom parameters, name them `custom_parameterName`.
   # The `custom_` prefix will be removed when generating the urls.
   filterParams: (params, method) ->
-    filters = @paramsFor(method)
+    filters = @urlParamsFor(method)
     if not filters? or filters.length is 0
       {}
     else
