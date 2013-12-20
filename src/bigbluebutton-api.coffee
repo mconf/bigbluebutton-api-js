@@ -132,6 +132,9 @@ class BigBlueButtonApi
         ]
       when "deleteRecordings"
         [ [ "recordID", true ] ]
+      when "setConfigXML"
+        [ [ "meetingID", true ],
+          [ "configXML", true ] ]
 
   # Filter `params` to allow only parameters that can be passed
   # to the method `method`.
