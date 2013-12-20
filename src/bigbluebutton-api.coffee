@@ -169,7 +169,7 @@ class BigBlueButtonApi
     paramList = []
     for key, param of params
       if key? and param?
-        paramList.push "#{encodeURIComponent(key)}=#{encodeURIComponent(param)}"
+        paramList.push "#{@encodeForUrl(key)}=#{@encodeForUrl(param)}"
     query = paramList.join("&") if paramList.length > 0
 
     # calculate the checksum
@@ -214,6 +214,12 @@ class BigBlueButtonApi
     else
       str = method + query + @salt
     Crypto.SHA1(str)
+
+  # Encodes a string to set it in the URL. Has to encode it exactly like BigBlueButton does!
+  # Otherwise the validation of the checksum might fail at some point.
+  encodeForUrl: (value) ->
+    encodeURIComponent(value)
+      .replace(/%20/g, '+') # because the encoding in BBB using java uses '+'
 
 # Ruby-like include() method for Objects
 include = (input, _function) ->
