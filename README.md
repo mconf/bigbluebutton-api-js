@@ -30,8 +30,8 @@ This library requires:
 * [CryptoJS](http://code.google.com/p/crypto-js/), that can be found
   in the `vendor` directory.
 
-Add these libraries and `bigbluebutton-api.js` to your page, and then get the links with
-(code in Coffeescript):
+Add these libraries and `bigbluebutton-api.js` to your page. Then you can get the links to the API calls
+with a code similar to this example (code in Coffeescript):
 
 ```coffeescript
 # Create an API object passing the url, the salt and the mobile salt
@@ -59,17 +59,24 @@ params =
 urls = api.getUrls(params)
 ```
 
-This call will return an object with all URLs, similar to the examples below (not real examples, they don't have
-all parameters specified above):
+This call will return an array with several objects, each one defining a single API call. These objects have the following format:
 
 ```coffeescript
 {
-    create: "http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-123&meetingID=random-123&moderatorPW=mp&attendeePW=ap&welcome=%3Cbr%3EWelcome%20to%20%3Cb%3E%25%25CONFNAME%25%25%3C%2Fb%3E!&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
-  , end: "http://test-install.blindsidenetworks.com/bigbluebutton/api/end?meetingID=random-123&password=mp&checksum=4f0df85832063a4606786a8f4207a6629fcc"
-  , getMeetings: "http://test-install.blindsidenetworks.com/bigbluebutton/api/getMeetings?random=123&checksum=94ba109ea7348ea7d89239855812fdd7bdaf"
-  ...
+  name: 'join'
+  description: 'join (as moderator)'
+  url: 'http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-266119&meetingID=random-266119&moderatorPW=mp&attendeePW=ap&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4'
 }
 ```
+
+Where:
+
+* `name`: the name of the API method
+* `description`: a description of the method, usually its name only or the name plus a small
+  description if it's an specific call for the target method
+* `url`: the URL to call the method
+
+
 
 ### Custom parameters
 

@@ -10,22 +10,30 @@ class BigBlueButtonApi
     @salt = salt
     @mobileKey = mobileKey
 
-  # Returns an object with URLs to all methods in BigBlueButton's API.
-  # The returned object has a string that represents the name of the API call as key and
-  # the API link as value.
-  # For example:
+  # Returns an array with object containing the URLs and description of all methods in
+  # BigBlueButton's API.
+  #
+  # The objects inside the array are in the following format:
   #   {
-  #      create: "http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-266119&meetingID=random-266119&moderatorPW=mp&attendeePW=ap&welcome=%3Cbr%3EWelcome%20to%20%3Cb%3E%25%25CONFNAME%25%25%3C%2Fb%3E!&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
-  #    , end: "http://test-install.blindsidenetworks.com/bigbluebutton/api/end?meetingID=random-266119&password=mp&checksum=4f0df85832063a4606786a8f4207a6629fcc"
+  #     name: 'join'
+  #     description: 'join (as moderator)'
+  #     url: 'http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-266119&meetingID=random-266119&moderatorPW=mp&attendeePW=ap&welcome=%3Cbr%3EWelcome%20to%20%3Cb%3E%25%25CONFNAME%25%25%3C%2Fb%3E!&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4'
   #   }
   #
-  # `params`: An object with pairs of `parameter`:`value`. The parameters will be used only in the
-  #           API calls they should be used. If a parameter name starts with `custom_`, it will
-  #           be used in all API calls, removing the `custom_` prefix.
-  #           Parameters to be used as metadata should use the prefix `meta_`.
-  # `customCalls`: An array of strings that represent the name of custom API calls that should
-  #                also be returned. Can be any string and will always be returned. All the
-  #                parameters in `params` will be applied to these calls.
+  # Where:
+  # * `name`: the name of the API method
+  # * `description`: a description of the method, usually its name only or the name plus a small
+  #   description if it's an specific call for the target method
+  # * `url`: the URL to call the method
+  #
+  # Parameters received:
+  # * `params`: An object with pairs of `parameter`:`value`. The parameters will be used only in the
+  #             API calls they should be used. If a parameter name starts with `custom_`, it will
+  #             be used in all API calls, removing the `custom_` prefix.
+  #             Parameters to be used as metadata should use the prefix `meta_`.
+  # * `customCalls`: An array of strings that represent the name of custom API calls that should
+  #                  also be returned. Can be any string and will always be returned. All the
+  #                  parameters in `params` will be applied to these calls.
   getUrls: (params, customCalls=null) ->
     params ?= {}
 
@@ -37,35 +45,37 @@ class BigBlueButtonApi
     joinModMobile = replaceMobileProtocol(joinMod)
     # for all other urls, the password will be moderatorPW
 
-    ret =
+    _elem = (name, desc, url) ->
+      { name: name, description: desc, url: url }
 
-      # standard API
-      'root': @urlFor("", params)
-      'create': @urlFor("create", params)
-      'join (as moderator)': joinMod
-      'join (as attendee)': joinAtt
-      'isMeetingRunning': @urlFor("isMeetingRunning", params)
-      'getMeetingInfo': @urlFor("getMeetingInfo", params)
-      'end': @urlFor("end", params)
-      'getMeetings': @urlFor("getMeetings", params)
-      'getDefaultConfigXML': @urlFor("getDefaultConfigXML", params)
-      'setConfigXML': @urlFor("setConfigXML", params)
-      'getRecordings': @urlFor("getRecordings", params)
-      'publishRecordings': @urlFor("publishRecordings", params)
-      'deleteRecordings': @urlFor("deleteRecordings", params)
+    ret = [
+      _elem('root', 'root', @urlFor("", params)),
+      _elem('create', 'create', @urlFor("create", params)),
+      _elem('join', 'join (as moderator)', joinMod),
+      _elem('join', 'join (as attendee)', joinAtt),
+      _elem('isMeetingRunning', 'isMeetingRunning', @urlFor("isMeetingRunning", params))
+      _elem('getMeetingInfo', 'getMeetingInfo', @urlFor("getMeetingInfo", params))
+      _elem('end', 'end', @urlFor("end", params))
+      _elem('getMeetings', 'getMeetings', @urlFor("getMeetings", params))
+      _elem('getDefaultConfigXML', 'getDefaultConfigXML', @urlFor("getDefaultConfigXML", params))
+      _elem('setConfigXML', 'setConfigXML', @urlFor("setConfigXML", params))
+      _elem('getRecordings', 'getRecordings', @urlFor("getRecordings", params))
+      _elem('publishRecordings', 'publishRecordings', @urlFor("publishRecordings", params))
+      _elem('deleteRecordings', 'deleteRecordings', @urlFor("deleteRecordings", params))
 
       # link to use in mobile devices
-      'join from mobile (as moderator)': joinModMobile
-      'join from mobile (as attendee)': joinAttMobile
+      _elem('join', 'join from mobile (as moderator)', joinModMobile)
+      _elem('join', 'join from mobile (as attendee)', joinAttMobile)
 
       # mobile API
-      'mobile: getTimestamp': @urlForMobileApi("getTimestamp", params)
-      'mobile: getMeetings': @urlForMobileApi("getMeetings", params)
-      'mobile: create': @urlForMobileApi("create", params)
+      _elem('getTimestamp', 'mobile: getTimestamp', @urlForMobileApi("getTimestamp", params))
+      _elem('getMeetings', 'mobile: getMeetings', @urlForMobileApi("getMeetings", params))
+      _elem('create', 'mobile: create', @urlForMobileApi("create", params))
+    ]
 
     if customCalls?
       for call in customCalls
-        ret[ 'custom call: ' + call] =  @urlFor(call, params, false)
+        ret.push _elem(call, "custom call: #{call}", @urlFor(call, params, false))
 
     ret
 
