@@ -165,12 +165,19 @@ class BigBlueButtonApi
 
     url = @url
 
-    # list of params
+    # mounts the string with the list of parameters
     paramList = []
-    for key, param of params
-      if key? and param?
-        paramList.push "#{@encodeForUrl(key)}=#{@encodeForUrl(param)}"
-    query = paramList.join("&") if paramList.length > 0
+    if params?
+      # add the parameters in alphabetical order to prevent checksum errors
+      # (happens in setConfigXML calls, maybe in others)
+      keys = Object.keys(params)
+      keys = keys.sort()
+      for key in keys
+        param = params[key] if key?
+        paramList.push "#{@encodeForUrl(key)}=#{@encodeForUrl(param)}" if param?
+      query = paramList.join("&") if paramList.length > 0
+    else
+      query = ''
 
     # calculate the checksum
     checksum = @checksum(method, query)
