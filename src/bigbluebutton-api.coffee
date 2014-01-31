@@ -226,7 +226,9 @@ class BigBlueButtonApi
   # Otherwise the validation of the checksum might fail at some point.
   encodeForUrl: (value) ->
     encodeURIComponent(value)
-      .replace(/%20/g, '+') # because the encoding in BBB using java uses '+'
+      .replace(/%20/g, '+') # use + instead of %20 for space to match what the Java tools do.
+      .replace(/[!'()]/g, escape) # encodeURIComponent doesn't escape !'()* but browsers do, so manually escape them.
+      .replace(/\*/g, "%2A")
 
 # Ruby-like include() method for Objects
 include = (input, _function) ->
