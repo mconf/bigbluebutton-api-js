@@ -170,7 +170,8 @@ class BigBlueButtonApi
     if params?
       # add the parameters in alphabetical order to prevent checksum errors
       # (happens in setConfigXML calls, maybe in others)
-      keys = Object.keys(params)
+      keys = []
+      keys.push(property) for property of params
       keys = keys.sort()
       for key in keys
         param = params[key] if key?
