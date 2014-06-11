@@ -66,11 +66,6 @@ class BigBlueButtonApi
       # link to use in mobile devices
       _elem('join', 'join from mobile (as moderator)', joinModMobile)
       _elem('join', 'join from mobile (as attendee)', joinAttMobile)
-
-      # mobile API
-      _elem('getTimestamp', 'mobile: getTimestamp', @urlForMobileApi("getTimestamp", params))
-      _elem('getMeetings', 'mobile: getMeetings', @urlForMobileApi("getMeetings", params))
-      _elem('create', 'mobile: create', @urlForMobileApi("create", params))
     ]
 
     if customCalls?
@@ -192,26 +187,6 @@ class BigBlueButtonApi
     query += "checksum=" + checksum
 
     url + "/" + query
-
-  # Calls `urlFor` and changes the generated url to point
-  # to the mobile API.
-  urlForMobileApi: (method, params) ->
-    url = @urlFor(method, params, true)
-
-    # change the path
-    oldPat = new RegExp("bigbluebutton\\/api\\/" + method + "\\?")
-    url = url.replace(oldPat, "demo/mobile.jsp?action=" + method + "&")
-
-    # removes the old checksum to add a new one later
-    url = url.replace(/[&]?checksum=.*$/, "")
-
-    # add the timestamp and the checksum
-    unless url.match(/action=getTimestamp/)
-      url = url + "&timestamp=" + new Date().getTime()
-    query = ""
-    matched = url.match(/\?(.*)$/)
-    query = matched[1] if matched? and matched[1]?
-    url = url + "&checksum=" + @checksum(method, query, true)
 
   # Calculates the checksum for an API call `method` with
   # the params in `query`.
