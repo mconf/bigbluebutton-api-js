@@ -39,7 +39,6 @@
 
         server = $("#server").val();
         salt = $("#salt").val();
-        mobileSalt = $("#mobile-salt").val();
         meetingID = $("#meetingID").val();
         moderatorPW = $("#moderatorPW").val();
         attendeePW = $("#attendeePW").val();
@@ -57,7 +56,7 @@
         // for custom calls
         customCalls = $("#customCalls").val().split(/\n/);
 
-        api = new BigBlueButtonApi(server, salt, mobileSalt);
+        api = new BigBlueButtonApi(server, salt);
         params = { meetingID:meetingID, moderatorPW: moderatorPW, attendeePW: attendeePW };
         params = $.extend(params, customParams);
         params = removeEmptyParams(params);
@@ -87,10 +86,6 @@
       <div class="fieldset">
         <label for="salt" class="control-label">Salt:</label>
         <input id="salt" type="text" value="8cd8ef52e8e101574e400365b55e11a6">
-      </div>
-      <div class="fieldset">
-        <label for="mobile-salt" class="control-label">Mobile Salt:</label>
-        <input id="mobile-salt" type="text" value="03b07">
       </div>
       <h4>Some basic parameters:</h4>
       <div class="fieldset">

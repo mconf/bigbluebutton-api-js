@@ -34,9 +34,9 @@ Add these libraries and `bigbluebutton-api.js` to your page. Then you can get th
 with a code similar to this example (code in Coffeescript):
 
 ```coffeescript
-# Create an API object passing the url, the salt and the mobile salt
+# Create an API object passing the url and the shared secret
 api = new BigBlueButtonApi("http://test-install.blindsidenetworks.com/bigbluebutton/api/",
-                           "8cd8ef52e8e101574e400365b55e11a6", "03b07")
+                           "8cd8ef52e8e101574e400365b55e11a6")
 
 # A hash of parameters.
 # The parameter names are the same names BigBlueButton expects to receive in the API calls.

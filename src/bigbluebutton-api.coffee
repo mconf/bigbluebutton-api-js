@@ -3,12 +3,10 @@ root = exports ? this
 class BigBlueButtonApi
 
   # `url`: The complete URL to the server's API, e.g. `http://server.com/bigbluebutton/api`
-  # `salt`: The salt (or shared secret) of your server.
-  # `mobileKey`: The mobile salt (or mobile secret) of your server.
-  constructor: (url, salt, mobileKey) ->
+  # `salt`: The shared secret of your server.
+  constructor: (url, salt) ->
     @url = url
     @salt = salt
-    @mobileKey = mobileKey
 
   # Returns an array with object containing the URLs and description of all methods in
   # BigBlueButton's API.
@@ -190,12 +188,9 @@ class BigBlueButtonApi
 
   # Calculates the checksum for an API call `method` with
   # the params in `query`.
-  checksum: (method, query, forMobile) ->
+  checksum: (method, query) ->
     query ||= ""
-    if forMobile? and forMobile
-      str = query + @mobileKey
-    else
-      str = method + query + @salt
+    str = method + query + @salt
     Crypto.SHA1(str)
 
   # Encodes a string to set it in the URL. Has to encode it exactly like BigBlueButton does!
