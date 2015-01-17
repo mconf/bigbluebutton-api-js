@@ -30,5 +30,5 @@ task 'build', 'Build lib/ from src/', ->
   build()
 
 task 'watch', 'Watch src/ for changes', ->
-  options = ['-w', '-c', '-o', 'lib', 'src']
+  options = ['-w', '-c', '-o', 'lib', 'src/bigbluebutton-api.coffee']
   run('coffee', options)
