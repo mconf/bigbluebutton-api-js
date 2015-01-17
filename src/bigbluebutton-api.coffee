@@ -4,9 +4,11 @@ class BigBlueButtonApi
 
   # `url`: The complete URL to the server's API, e.g. `http://server.com/bigbluebutton/api`
   # `salt`: The shared secret of your server.
-  constructor: (url, salt) ->
+  # `debug`: Turn on debug messages, printed to `console.log`.
+  constructor: (url, salt, debug=false) ->
     @url = url
     @salt = salt
+    @debug = debug
 
   # Returns an array with object containing the URLs and description of all methods in
   # BigBlueButton's API.
@@ -151,6 +153,7 @@ class BigBlueButtonApi
   # Returns a url for any `method` available in the BigBlueButton API
   # using the parameters in `params`.
   urlFor: (method, params, filter=true) ->
+    console.log "Generating URL for", method if @debug
     if filter
       params = @filterParams(params, method)
     else
@@ -162,7 +165,7 @@ class BigBlueButtonApi
     paramList = []
     if params?
       # add the parameters in alphabetical order to prevent checksum errors
-      # (happens in setConfigXML calls, maybe in others)
+      # (happens in setConfigXML)
       keys = []
       keys.push(property) for property of params
       keys = keys.sort()
@@ -190,8 +193,11 @@ class BigBlueButtonApi
   # the params in `query`.
   checksum: (method, query) ->
     query ||= ""
+    console.log "- Calculating the checksum using: '#{method}', '#{query}', '#{@salt}'" if @debug
     str = method + query + @salt
-    Crypto.SHA1(str)
+    c = Crypto.SHA1(str)
+    console.log "- Checksum calculated:", c if @debug
+    c
 
   # Encodes a string to set it in the URL. Has to encode it exactly like BigBlueButton does!
   # Otherwise the validation of the checksum might fail at some point.
