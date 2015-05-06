@@ -56,25 +56,25 @@ params =
   voiceBridge: "75858"
   meta_anything: "My Meta Parameter"
   custom_customParameter: "Will be passed as 'customParameter' to all calls"
-urls = api.getUrls(params)
+
+urls = []
+for method in api.availableApiCalls()
+  urls.push { name: method, url: api.urlFor(method, params) }
 ```
 
-This call will return an array with several objects, each one defining a single API call. These objects have the following format:
+This call will create an array with several objects, each one defining a single API call. These objects have the following format:
 
 ```coffeescript
 {
   name: 'join'
-  description: 'join (as moderator)'
   url: 'http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-266119&meetingID=random-266119&moderatorPW=mp&attendeePW=ap&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4'
 }
 ```
 
 Where:
 
-* `name`: the name of the API method
-* `description`: a description of the method, usually its name only or the name plus a small
-  description if it's an specific call for the target method
-* `url`: the URL to call the method
+* `name`: the name of the API method.
+* `url`: the URL to call the method, as returned by `bigbluebutton-api-js`.
 
 
 
@@ -90,7 +90,7 @@ params =
   meetingID: "random-123"
   custom_customParameter: "random"
   custom_another: 123
-urls = api.getUrls(params)
+url = api.urlFor('join', params)
 ```
 
 Will return URLs such as:
@@ -110,7 +110,7 @@ params =
   meetingID: "random-9998650"
   meta_any: "random"
   meta_another: 123
-urls = api.getUrls(params)
+url = api.urlFor('create', params)
 ```
 
 Will return URLs such as:
@@ -121,8 +121,9 @@ Will return URLs such as:
 
 ### Custom API calls
 
-You can pass an array of custom API calls to `getUrls()`. This array should contain strings with the name of your
-custom API calls. **All** the parameters will be used in **all** the custom API calls.
+You can pass any method you'd like to `urlFor()`, even if it's not a method supported
+by default on BigBlueButton's API. **All** the parameters passed to `urlFor` will be
+added to the API call.
 
 
 ```coffeescript
@@ -130,19 +131,16 @@ params =
   meetingID: "random-9998650"
   meta_any: "random"
   custom_another: 123
-urls = api.getUrls(params, ["customApiCall", "anotherCall"])
+url = api.urlFor('customApiCall', params)
 ```
 
 Will return URLs such as:
 
 ```coffeescript
 "http://server.com/bigbluebutton/api/customApiCall?meetingID=random-123&meta_any=random&another=123&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
-"http://server.com/bigbluebutton/api/anotherCall?meetingID=random-123&meta_any=random&another=123&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4"
-```
 
 ### More
 
-* If you want only the URL for a single API method, use the methods `urlFor`. For example: `api.urlFor("isMeetingRunning", params)`.
 * To get just the checksum for a call you can use the method `checksum`. For example: `api.checksum("isMeetingRunning", "meetingID=mymeeting&custom=1", false)`.
 
 

@@ -10,69 +10,21 @@ class BigBlueButtonApi
     @salt = salt
     @debug = debug
 
-  # Returns an array with object containing the URLs and description of all methods in
-  # BigBlueButton's API.
-  #
-  # The objects inside the array are in the following format:
-  #   {
-  #     name: 'join'
-  #     description: 'join (as moderator)'
-  #     url: 'http://test-install.blindsidenetworks.com/bigbluebutton/api/create?name=random-266119&meetingID=random-266119&moderatorPW=mp&attendeePW=ap&welcome=%3Cbr%3EWelcome%20to%20%3Cb%3E%25%25CONFNAME%25%25%3C%2Fb%3E!&voiceBridge=76262&record=false&checksum=6c529b6e31fbce9668fd66d99a09da7a78f4'
-  #   }
-  #
-  # Where:
-  # * `name`: the name of the API method
-  # * `description`: a description of the method, usually its name only or the name plus a small
-  #   description if it's an specific call for the target method
-  # * `url`: the URL to call the method
-  #
-  # Parameters received:
-  # * `params`: An object with pairs of `parameter`:`value`. The parameters will be used only in the
-  #             API calls they should be used. If a parameter name starts with `custom_`, it will
-  #             be used in all API calls, removing the `custom_` prefix.
-  #             Parameters to be used as metadata should use the prefix `meta_`.
-  # * `customCalls`: An array of strings that represent the name of custom API calls that should
-  #                  also be returned. Can be any string and will always be returned. All the
-  #                  parameters in `params` will be applied to these calls.
-  getUrls: (params, customCalls=null) ->
-    params ?= {}
-
-    params.password = params.attendeePW
-    joinAtt = @urlFor("join", params)
-    joinAttMobile = replaceMobileProtocol(joinAtt)
-    params.password = params.moderatorPW
-    joinMod = @urlFor("join", params)
-    joinModMobile = replaceMobileProtocol(joinMod)
-    # for all other urls, the password will be moderatorPW
-
-    _elem = (name, desc, url) ->
-      { name: name, description: desc, url: url }
-
-    ret = [
-      _elem('root', 'root', @urlFor("", params)),
-      _elem('create', 'create', @urlFor("create", params)),
-      _elem('join', 'join (as moderator)', joinMod),
-      _elem('join', 'join (as attendee)', joinAtt),
-      _elem('isMeetingRunning', 'isMeetingRunning', @urlFor("isMeetingRunning", params))
-      _elem('getMeetingInfo', 'getMeetingInfo', @urlFor("getMeetingInfo", params))
-      _elem('end', 'end', @urlFor("end", params))
-      _elem('getMeetings', 'getMeetings', @urlFor("getMeetings", params))
-      _elem('getDefaultConfigXML', 'getDefaultConfigXML', @urlFor("getDefaultConfigXML", params))
-      _elem('setConfigXML', 'setConfigXML', @urlFor("setConfigXML", params))
-      _elem('getRecordings', 'getRecordings', @urlFor("getRecordings", params))
-      _elem('publishRecordings', 'publishRecordings', @urlFor("publishRecordings", params))
-      _elem('deleteRecordings', 'deleteRecordings', @urlFor("deleteRecordings", params))
-
-      # link to use in mobile devices
-      _elem('join', 'join from mobile (as moderator)', joinModMobile)
-      _elem('join', 'join from mobile (as attendee)', joinAttMobile)
+  # Returna a list with the name of all available API calls.
+  availableApiCalls: ->
+    [ '/',
+      'create',
+      'join',
+      'isMeetingRunning',
+      'getMeetingInfo',
+      'end',
+      'getMeetings',
+      'getDefaultConfigXML',
+      'setConfigXML',
+      'getRecordings',
+      'publishRecordings',
+      'deleteRecordings'
     ]
-
-    if customCalls?
-      for call in customCalls
-        ret.push _elem(call, "custom call: #{call}", @urlFor(call, params, false))
-
-    ret
 
   # Returns a list of supported parameters in the URL for a given API method.
   # The return is an array of arrays composed by:
@@ -152,6 +104,15 @@ class BigBlueButtonApi
 
   # Returns a url for any `method` available in the BigBlueButton API
   # using the parameters in `params`.
+  # Parameters received:
+  # * `method`: The name of the API method
+  # * `params`: An object with pairs of `parameter`:`value`. The parameters will be used only in the
+  #             API calls they should be used. If a parameter name starts with `custom_`, it will
+  #             be used in all API calls, removing the `custom_` prefix.
+  #             Parameters to be used as metadata should use the prefix `meta_`.
+  # * `filter`: Whether the parameters in `params` should be filtered, so that the API
+  #             calls will contain only the parameters they accept. If false, all parameters
+  #             in `params` will be added to the API call.
   urlFor: (method, params, filter=true) ->
     console.log "Generating URL for", method if @debug
     if filter
@@ -207,6 +168,10 @@ class BigBlueButtonApi
       .replace(/[!'()]/g, escape) # encodeURIComponent doesn't escape !'()* but browsers do, so manually escape them.
       .replace(/\*/g, "%2A")
 
+  # Replaces the protocol for `bigbluebutton://`.
+  setMobileProtocol: (url) ->
+    url.replace(/http[s]?\:\/\//, "bigbluebutton://")
+
 # Ruby-like include() method for Objects
 include = (input, _function) ->
   _obj = new Object
@@ -215,10 +180,6 @@ include = (input, _function) ->
     if _function.call(input, key, value)
       _obj[key] = value
    _obj
-
-# Replaces the protocol for `bigbluebutton://`.
-replaceMobileProtocol = (url) ->
-  url.replace(/http[s]?\:\/\//, "bigbluebutton://")
 
 root.BigBlueButtonApi = BigBlueButtonApi
 
