@@ -79,9 +79,6 @@ class BigBlueButtonApi
         ]
       when "deleteRecordings"
         [ [ "recordID", true ] ]
-      when "setConfigXML"
-        [ [ "meetingID", true ],
-          [ "configXML", true ] ]
 
   # Filter `params` to allow only parameters that can be passed
   # to the method `method`.
@@ -126,7 +123,6 @@ class BigBlueButtonApi
     paramList = []
     if params?
       # add the parameters in alphabetical order to prevent checksum errors
-      # (happens in setConfigXML)
       keys = []
       keys.push(property) for property of params
       keys = keys.sort()
@@ -142,13 +138,15 @@ class BigBlueButtonApi
 
     # add the missing elements in the query
     if paramList.length > 0
-      query = method + "?" + query
-      query += "&"
+      query = "#{method}?#{query}"
+      sep = '&'
     else
-      query = method + "?"
-    query += "checksum=" + checksum
+      query = method unless method is '/'
+      sep = '?'
+    unless method in ['setConfigXML', '/']
+      query = "#{query}#{sep}checksum=#{checksum}"
 
-    url + "/" + query
+    "#{url}/#{query}"
 
   # Calculates the checksum for an API call `method` with
   # the params in `query`.
