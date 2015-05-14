@@ -49,7 +49,7 @@ class BigBlueButtonApi
           [ "record", false ],
           [ "duration", false ],
           [ /meta_\w+/, false ],
-          [ "redirectClient", false ],
+          [ "redirect", false ],
           [ "clientURL", false ]
         ]
       when "join"
