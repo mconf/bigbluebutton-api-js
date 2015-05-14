@@ -21,6 +21,9 @@ class BigBlueButtonApi
       'getMeetings',
       'getDefaultConfigXML',
       'setConfigXML',
+      'enter',
+      'configXML',
+      'signOut',
       'getRecordings',
       'publishRecordings',
       'deleteRecordings'
@@ -143,7 +146,7 @@ class BigBlueButtonApi
     else
       query = method unless method is '/'
       sep = '?'
-    unless method in ['setConfigXML', '/']
+    unless method in noChecksumMethods()
       query = "#{query}#{sep}checksum=#{checksum}"
 
     "#{url}/#{query}"
@@ -189,3 +192,6 @@ filterCustomParameters = (params) ->
   for key of params
     delete params[key] if key.match(/^custom_/)
   params
+
+noChecksumMethods = ->
+  ['setConfigXML', '/', 'enter', 'configXML', 'signOut']
