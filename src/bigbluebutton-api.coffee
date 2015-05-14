@@ -48,6 +48,9 @@ class BigBlueButtonApi
           [ "maxParticipants", false ],
           [ "record", false ],
           [ "duration", false ],
+          [ "moderatorOnlyMessage", false ],
+          [ "autoStartRecording", false ],
+          [ "allowStartStopRecording", false ],
           [ /meta_\w+/, false ]
         ]
       when "join"
