@@ -76,7 +76,9 @@ class BigBlueButtonApi
           [ "password", true ]
         ]
       when "getRecordings"
-        [ [ "meetingID", true ],
+        [ [ "meetingID", false ],
+          [ "recordID", false ],
+          [ "state", false ],
           [ /meta_\w+/, false ]
         ]
       when "publishRecordings"
