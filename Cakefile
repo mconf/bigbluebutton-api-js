@@ -1,6 +1,6 @@
 fs = require 'fs'
 
-{print} = require 'sys'
+{print} = require 'util'
 {spawn} = require 'child_process'
 
 binPath = './node_modules/.bin/'
