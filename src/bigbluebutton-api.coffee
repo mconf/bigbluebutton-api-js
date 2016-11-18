@@ -87,6 +87,10 @@ class BigBlueButtonApi
         ]
       when "deleteRecordings"
         [ [ "recordID", true ] ]
+      when "updateRecordings"
+        [ [ "recordID", true ],
+          [ /meta_\w+/, false ]
+        ]
 
   # Filter `params` to allow only parameters that can be passed
   # to the method `method`.
