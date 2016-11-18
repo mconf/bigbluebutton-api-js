@@ -26,7 +26,8 @@ class BigBlueButtonApi
       'signOut',
       'getRecordings',
       'publishRecordings',
-      'deleteRecordings'
+      'deleteRecordings',
+      'updateRecordings'
     ]
 
   # Returns a list of supported parameters in the URL for a given API method.
