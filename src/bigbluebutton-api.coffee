@@ -5,10 +5,13 @@ class BigBlueButtonApi
   # `url`: The complete URL to the server's API, e.g. `http://server.com/bigbluebutton/api`
   # `salt`: The shared secret of your server.
   # `debug`: Turn on debug messages, printed to `console.log`.
-  constructor: (url, salt, debug=false) ->
+  # `opts`: Additional options
+  constructor: (url, salt, debug=false, opts={}) ->
     @url = url
     @salt = salt
     @debug = debug
+    @opts = opts
+    @opts.shaType ?= 'sha1'
 
   # Returna a list with the name of all available API calls.
   availableApiCalls: ->
@@ -167,7 +170,12 @@ class BigBlueButtonApi
     query ||= ""
     console.log "- Calculating the checksum using: '#{method}', '#{query}', '#{@salt}'" if @debug
     str = method + query + @salt
-    c = Crypto.SHA1(str)
+    if @opts.shaType is 'sha256'
+      shaObj = new jsSHA("SHA-256", "TEXT")
+    else
+      shaObj = new jsSHA("SHA-1", "TEXT")
+    shaObj.update(str)
+    c = shaObj.getHash("HEX")
     console.log "- Checksum calculated:", c if @debug
     c
 

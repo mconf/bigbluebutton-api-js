@@ -27,8 +27,9 @@ Usage
 -----
 
 This library requires:
-* [CryptoJS](http://code.google.com/p/crypto-js/), that can be found
-  in the `vendor` directory.
+* [jsSHA](https://github.com/Caligatio/jsSHA), used to calculate checksums.
+  You can download it from their website or use the minified version that can be found in the
+  `vendor` directory.
 
 Add these libraries and `bigbluebutton-api.js` to your page. Then you can get the links to the API calls
 with a code similar to this example (code in Coffeescript):
