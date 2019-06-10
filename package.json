@@ -1,8 +1,8 @@
 {
-    "name": "bigbluebutton-api-js"
-  , "version": "0.0.1"
-  , "dependencies": {
-      "coffee-script": "1.8.0"
-  }
-  , "engine": "node >= 0.10.0"
+    "name": "bigbluebutton-api-js",
+    "version": "0.0.1",
+    "dependencies": {
+        "coffeescript": "2.4.1"
+    },
+    "engine": "node >= 12.4.0"
 }
