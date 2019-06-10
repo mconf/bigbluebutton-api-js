@@ -30,7 +30,8 @@ class BigBlueButtonApi
       'getRecordings',
       'publishRecordings',
       'deleteRecordings',
-      'updateRecordings'
+      'updateRecordings',
+      'getRecordingTextTracks'
     ]
 
   # Returns a list of supported parameters in the URL for a given API method.
@@ -95,6 +96,8 @@ class BigBlueButtonApi
         [ [ "recordID", true ],
           [ /meta_\w+/, false ]
         ]
+      when "getRecordingTextTracks"
+        [ [ "recordID", true ] ]
 
   # Filter `params` to allow only parameters that can be passed
   # to the method `method`.
