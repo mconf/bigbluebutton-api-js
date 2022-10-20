@@ -173,10 +173,13 @@ class BigBlueButtonApi
     query ||= ""
     console.log "- Calculating the checksum using: '#{method}', '#{query}', '#{@salt}'" if @debug
     str = method + query + @salt
-    if @opts.shaType is 'sha256'
-      shaObj = new jsSHA("SHA-256", "TEXT")
-    else
-      shaObj = new jsSHA("SHA-1", "TEXT")
+    switch @opts.shaType
+      when 'sha1' then shaObj = new jsSHA("SHA-1", "TEXT")
+      when 'sha256' then shaObj = new jsSHA("SHA-256", "TEXT")
+      when 'sha384' then shaObj = new jsSHA("SHA-384", "TEXT")
+      when 'sha512' then shaObj = new jsSHA("SHA-512", "TEXT")
+      else shaObj = new jsSHA("SHA-1", "TEXT")
+      
     shaObj.update(str)
     c = shaObj.getHash("HEX")
     console.log "- Checksum calculated:", c if @debug
